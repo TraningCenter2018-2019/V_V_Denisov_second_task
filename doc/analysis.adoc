@@ -1,0 +1,40 @@
+Для решения задачи о парсере JSON нам понадобится следующая структура проекта:
+[plantuml, diagram-classes, png]
+----
+class ObjectMapper {
+	+serialize(Object toSerialize) : String
+	+deserialize(String json, Class<T> type) : T
+	+deserialize(String json, TypeReference<T> typeRef) : T
+}
+
+ObjectMapper --> TypeReference
+ObjectMapper o-> Parser
+
+class TypeReference {
+	+getType() : Type
+}
+
+interface Parser<T> {
+	+parseString(String toParse, Class<T> type) : T
+	+parseString(String toParse, TypeReference<T> typeRef) : T
+}
+
+class DOMParser<T> {
+	-root : DOMNode
+}
+
+DOMParser ..|> Parser
+DOMParser *-> DOMNode
+
+class DOMNode {
+	-child : List<DOMNode>
+	+getChild() : List<DOMNode>
+	+setChild(List<DOMNode>) : void
+}
+
+class SAXParser<T> {
+	
+}
+
+SAXParser ..|> Parser
+----
