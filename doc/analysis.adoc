@@ -1,0 +1,103 @@
+Для решения задачи о парсере JSON нам понадобится следующая структура проекта:
+[plantuml, diagram-classes, png]
+----
+class ObjectMapper {
+	+ObjectMapper(Parser parser)
+	
+	+serialize(Object toSerialize) : String
+	+deserialize(String json, Class<T> type) : T
+	+deserialize(String json, TypeReference<T> typeRef) : T
+}
+
+ObjectMapper -up-> TypeReference
+ObjectMapper o-> Parser
+
+class TypeReference {
+	+getType() : Type
+}
+
+class Serializer {
+	+getObjectAsString() : String
+}
+ObjectMapper --right--> Serializer
+Serializer -> annotations
+
+interface Parser<T> {
+	+parseString(String toParse, Class<T> type) : T
+	+parseString(String toParse, TypeReference<T> typeRef) : T
+}
+
+Parser -down-> annotations
+
+class DOMParser<T> {
+	-root : DOMNode
+	-parseString(String toParse) : DOMNode
+	-buildObject() : T
+}
+
+DOMParser ..|> Parser
+DOMParser *-> DOMNode
+
+class DOMNode {
+	-nodeList : List<DOMNode>
+	-key : String
+	-stringValue : String
+	+getKey() : String
+	+getStringValue() : String
+	+getIntegerValue() : int
+	+getDoubleValue() : double
+	+getBooleanValue() : boolean
+	+getNodeValue() : DOMNode
+	+getNodeListValue() : List<DOMNode>
+}
+
+class SAXParser<T> {
+	
+}
+
+SAXParser ..|> Parser
+
+package annotations {
+interface JSONIgnore {
+	
+}
+
+interface JSONKey {
+	name : String
+}
+
+interface JSONSubtypes {
+	types : Type[]
+}
+
+JSONSubtypes *-down-> JSONType
+
+interface JSONType {
+	value : Class<?>
+	name : String
+}
+
+interface JSONDatePattern {
+	value : DateFormat
+}
+}
+----
+Класс `ObjectMapper` занимается сериализацией и десериализацией.
+Он использует `Parser`, который пользователь задаёт ему при вызове конструктора.
+Парсеров в проекте предусмотрено два: `SAXParser` и `DOMParser`.
+
+`DOMParser` сканирует полностью json-строку (метод 'DOMParser::parseString(String toParse)'), затем
+создаёт по полученному дереву искомый объект (метод 'DOMParser::buildObject()').
+
+Структура `SAXParser` находится в разработке...
+
+Парсеры используют для своих целей аннотации.
+
+В проекте предусмотрены следующие:
+
+* `JSONIgnore` -  для игнорирования поля при сериализации
+* `JSONKey` - задаёт название полю при сериализации
+* `JSONDatePattern` - задаёт формат даты при сериализации
+* `JSONSubtypes` - указывает, как при сериализации отличать наследников данного суперкласса. А именно: название
+поля, в котором будет информация о подтипе и подтип
+* `JSONType` - подтип. Соединяет понятие типа и строки, используемой при сериализации
