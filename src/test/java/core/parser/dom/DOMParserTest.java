@@ -8,8 +8,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Tests for DOM parser.
+ */
 class DOMParserTest {
 
+    /**
+     * The test checks whether the parser can read json correctly with a single field.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     void parserMustReadOnlyOneProperty() throws IOException {
         //arrange
@@ -30,32 +38,35 @@ class DOMParserTest {
             Assertions.fail(e);
         }
 
-        //node = rightNode;
-
         //assert
         Assertions.assertNotNull(node,
-                "Узел не должен быть null");
+                "Node can't null");
         List<DOMProperty> properties = node.getProperties();
         Assertions.assertNotNull(properties,
-                "Узел должен иметь список свойств");
+                "Node must have property list");
         Assertions.assertEquals(1, properties.size(),
-                "Должно быть считано ровно одно свойство");
+                "Only one property must be read");
         DOMProperty property = properties.get(0);
         Assertions.assertNotNull(property.getKey(),
-                "Ключ поля не был считан");
+                "The field key was not read");
         Assertions.assertEquals("key", property.getKey(),
-                "Ключ поля был считан не верно");
+                "The field key was not read correctly");
         DOMValue value = property.getValue();
         Assertions.assertNotNull(value,
-                "Значение поля не было считано");
+                "The field value was not read");
         Assertions.assertEquals("value", value.getStringValue(),
-                "Значение поля было считано не верно");
+                "The field value was not read correctly");
         Assertions.assertNull(value.getListValue(),
-                "Значение поля было считано как список, а должно быть считано как строка");
+                "The value of the field was read as a list, but should be read as a string");
         Assertions.assertNull(value.getObjectValue(),
-                "Значение поля было считано как объект, а должно быть считано как строка");
+                "The value of the field was read as an object, but should be read as a string");
     }
 
+    /**
+     * The test checks whether the parser can correctly read json with several fields.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     void parserMustReadMultipleProperties() throws IOException {
         //arrange
@@ -79,20 +90,23 @@ class DOMParserTest {
             Assertions.fail(e);
         }
 
-        //node = rightNode;
-
         //assert
         Assertions.assertNotNull(node,
-                "Узел не должен быть null");
+                "Node can't null");
         List<DOMProperty> properties = node.getProperties();
         Assertions.assertNotNull(properties,
-                "Узел должен иметь список свойств");
+                "Node must have a list of properties");
         Assertions.assertEquals(2, properties.size(),
-                "Должно быть считано два свойства");
+                "Two properties must be read");
         Assertions.assertEquals(rightNode.getProperties(), properties,
-                "Свойства считаны некорректно");
+                "Properties read incorrectly");
     }
 
+    /**
+     * The test checks whether the parser can correctly read json with the list as a field.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     void parserMustReadListAsValue() throws IOException {
         //arrange
@@ -120,24 +134,28 @@ class DOMParserTest {
             Assertions.fail(e);
         }
 
-        //node = domValue;
-
         //assert
         Assertions.assertNotNull(node,
-                "Список не должен быть null");
+                "List must not be null");
         List<DOMValue> values = node.getListValue();
         Assertions.assertNotNull(values,
-                "Список должен иметь список значений");
+                "The list must have a list of values");
         Assertions.assertEquals(domValue.getListValue().size(), values.size(),
-                "В списке должно быть 4 значения");
+                "The list should have 4 values");
         for (int i = 0; i < domValue.getListValue().size(); i++) {
             Assertions.assertEquals(domValue.getListValue().get(i), values.get(i),
-                    String.format("Значение под номером %d считано неверно", i));
+                    String.format("Value numbered %d read incorrectly", i));
         }
         Assertions.assertEquals(domValue, node,
-                "Свойства считаны некорректно");
+                "Properties read incorrectly");
     }
 
+    /**
+     * The test checks whether the parser can correctly consider
+     * json as consisting of one line. (JSON thus considered valid).
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     void parserMustReadStringAsValue() throws IOException {
         //arrange
@@ -153,32 +171,35 @@ class DOMParserTest {
             Assertions.fail(e);
         }
 
-        //node = domValue;
-
         //assert
         Assertions.assertNotNull(node,
-                "Значение не должно быть null");
+                "Value should not be null");
         String value = node.getStringValue();
         Assertions.assertNotNull(value,
-                "Значение не было считано");
+                "Value has not been read");
         Assertions.assertEquals(json, value,
-                "Строка была считана некорректно");
+                "The string was read incorrectly");
     }
 
+    /**
+     * The test checks whether the parser can correctly read json with the object as the value.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     void parserMustReadObjectAsValue() throws IOException {
         //arrange
         DOMParser domParser = new DOMParser();
         String json = ResourceManager.getResourceString("objectasvalue.json");
-        DOMValue domValue = new DOMValue(new DOMObject(new ArrayList<DOMProperty>(){
+        DOMValue domValue = new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
             {
                 new DOMProperty("string_key", new DOMValue("string_value"));
-                new DOMProperty("object_key", new DOMValue(new DOMObject(new ArrayList<DOMProperty>(){
+                new DOMProperty("object_key", new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
                     {
                         new DOMProperty("inner_string_key", new DOMValue("inner_value"));
-                        new DOMProperty("inner_list_key", new DOMValue(new ArrayList<DOMValue>(){
+                        new DOMProperty("inner_list_key", new DOMValue(new ArrayList<DOMValue>() {
                             {
-                                new DOMValue(new DOMObject(new ArrayList<DOMProperty>(){
+                                new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
                                     {
                                         new DOMProperty("key1", new DOMValue("val1"));
                                         new DOMProperty("key2", new DOMValue("val2"));
@@ -199,12 +220,10 @@ class DOMParserTest {
             Assertions.fail(e);
         }
 
-        //node = domValue;
-
         //assert
         Assertions.assertNotNull(node,
-                "Значение не должно быть null");
+                "Value should not be null");
         Assertions.assertEquals(domValue.getObjectValue(), node.getObjectValue(),
-                "JSON был считан некорректно");
+                "JSON was read incorrectly");
     }
 }

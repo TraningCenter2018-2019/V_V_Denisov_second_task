@@ -6,7 +6,13 @@ import core.parser.TypeReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+/**
+ * DOM - Document Object Module. The parser that builds the tree initially.
+ */
 public class DOMParser implements Parser {
+    /**
+     * Root of DOM. This value is because it can be an array or an object.
+     */
     private DOMValue root;
 
     @Override
@@ -21,6 +27,12 @@ public class DOMParser implements Parser {
         return null;
     }
 
+    /**
+     * Parses a string (substring) and creates a node with information about it.
+     *
+     * @param toParse string to parse
+     * @return node
+     */
     DOMValue parseString(String toParse) {
         //throw new NotImplementedException();
         DOMObject domObject = new DOMObject();

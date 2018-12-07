@@ -1,12 +1,30 @@
 package core.parser.dom;
 
+/**
+ * Represents json property (key-value based).
+ */
 public class DOMProperty {
+    /**
+     * Property key.
+     */
     private String key;
+    /**
+     * Property value.
+     */
     private DOMValue value;
 
+    /**
+     * Creates DOMProperty instance.
+     */
     public DOMProperty() {
     }
 
+    /**
+     * Creates DOMProperty instance with key and value.
+     *
+     * @param key   key of property
+     * @param value value of property
+     */
     public DOMProperty(String key, DOMValue value) {
         this.key = key;
         this.value = value;

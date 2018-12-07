@@ -15,14 +15,30 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Tests for both parser implementations.
+ */
 @RunWith(Parameterized.class)
 public class ParserTest {
+    /**
+     * Parser for testing.
+     */
     public Parser parser;
 
-    public ParserTest(Parser myInterface) {
-        this.parser = myInterface;
+    /**
+     * Tests use a specific parser implementation.
+     *
+     * @param parser parser implementation
+     */
+    public ParserTest(Parser parser) {
+        this.parser = parser;
     }
 
+    /**
+     * Parser must deserialize object with one field.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeObjectWithOneField() throws IOException {
         //arrange
@@ -45,6 +61,11 @@ public class ParserTest {
                 "Field is deserialized wrong way");
     }
 
+    /**
+     * The parser must deserialize an object with multiple fields.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeObjectWithMultipleFields() throws IOException {
         //arrange
@@ -70,6 +91,11 @@ public class ParserTest {
                 "Field2 is deserialized wrong way");
     }
 
+    /**
+     * The parser should deserialize an object with objects as values.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeObjectWithObjectField() throws IOException {
         //arrange
@@ -97,6 +123,11 @@ public class ParserTest {
                 "Object field is deserialized wrong way");
     }
 
+    /**
+     * The parser should serialize the object with the list as a value.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeObjectWithListField() throws IOException {
         //arrange
@@ -121,6 +152,11 @@ public class ParserTest {
                 "Lists are not equal");
     }
 
+    /**
+     * The parser must deserialize the list of objects.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeListOfObjects() throws IOException {
         //arrange
@@ -147,6 +183,11 @@ public class ParserTest {
                 "Lists are not equal");
     }
 
+    /**
+     * Parser must deserialize object with dynamic type.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeGenericTypeObjects() throws IOException {
         //arrange
@@ -170,6 +211,11 @@ public class ParserTest {
                 "Values are ot equal");
     }
 
+    /**
+     * Parser must deserialize object with some dynamic types.
+     *
+     * @throws IOException error reading test resources.
+     */
     @Test
     public void parserMustDeserializeMultiGenericTypeObjects() throws IOException {
         //arrange
@@ -183,7 +229,7 @@ public class ParserTest {
         try {
             genericResult = parser.parseString(json,
                     new TypeReference<MultiGenericTypeObject<OneFieldObject, ListFieldObject>>() {
-            });
+                    });
         } catch (Exception e) {
             Assertions.fail(e);
         }
@@ -197,6 +243,11 @@ public class ParserTest {
                 "Values are ot equal");
     }
 
+    /**
+     * The method returns parser implementations.
+     *
+     * @return parser implementations
+     */
     @Parameterized.Parameters
     public static Collection<Object[]> instancesToTest() {
         return Arrays.asList(

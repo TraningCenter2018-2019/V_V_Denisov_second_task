@@ -3,21 +3,34 @@ package core.parser;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class TypeReference<T> implements Comparable<TypeReference<T>>
-{
-    protected final Type _type;
+/**
+ * Reference to object type.
+ *
+ * @param <T> object type
+ */
+public class TypeReference<T> implements Comparable<TypeReference<T>> {
+    /**
+     * Type object field.
+     */
+    private final Type type;
 
-    protected TypeReference()
-    {
+    /**
+     * Creates type reference.
+     */
+    public TypeReference() {
         Type superClass = getClass().getGenericSuperclass();
         if (superClass instanceof Class<?>) {
             throw new IllegalArgumentException();
         }
-        _type = ((ParameterizedType) superClass).getActualTypeArguments()[0];
+        type = ((ParameterizedType) superClass).getActualTypeArguments()[0];
     }
 
-    public Type getType() { return _type; }
+    public Type getType() {
+        return type;
+    }
 
     @Override
-    public int compareTo(TypeReference<T> o) { return 0; }
+    public int compareTo(TypeReference<T> o) {
+        return 0;
+    }
 }
