@@ -1,0 +1,8 @@
+{
+  "value": {
+    "stringField": "stringValue"
+  },
+  "value2": {
+    "stringList": []
+  }
+}
