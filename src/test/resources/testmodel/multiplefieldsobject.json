@@ -1,6 +1,4 @@
 {
-  "stringField": "stringValue",
-  "innerClassField": {
-    "innerStringField": "innerStringValue"
-  }
+  "stringField1": "stringValue1",
+  "stringField2": "stringValue2"
 }

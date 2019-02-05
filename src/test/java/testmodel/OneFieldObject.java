@@ -24,4 +24,19 @@ public class OneFieldObject {
                 "stringField='" + stringField + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OneFieldObject that = (OneFieldObject) o;
+
+        return getStringField() != null ? getStringField().equals(that.getStringField()) : that.getStringField() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return getStringField() != null ? getStringField().hashCode() : 0;
+    }
 }

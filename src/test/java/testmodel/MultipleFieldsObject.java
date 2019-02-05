@@ -27,4 +27,23 @@ public class MultipleFieldsObject {
                 ", stringField2='" + stringField2 + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MultipleFieldsObject that = (MultipleFieldsObject) o;
+
+        if (getStringField1() != null ? !getStringField1().equals(that.getStringField1()) : that.getStringField1() != null)
+            return false;
+        return getStringField2() != null ? getStringField2().equals(that.getStringField2()) : that.getStringField2() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getStringField1() != null ? getStringField1().hashCode() : 0;
+        result = 31 * result + (getStringField2() != null ? getStringField2().hashCode() : 0);
+        return result;
+    }
 }

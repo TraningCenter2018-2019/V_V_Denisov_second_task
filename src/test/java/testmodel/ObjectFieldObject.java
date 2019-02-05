@@ -18,6 +18,21 @@ public class ObjectFieldObject {
                     "innerStringField='" + innerStringField + '\'' +
                     '}';
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            InnerClass that = (InnerClass) o;
+
+            return getInnerStringField() != null ? getInnerStringField().equals(that.getInnerStringField()) : that.getInnerStringField() == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return getInnerStringField() != null ? getInnerStringField().hashCode() : 0;
+        }
     }
 
     private String stringField;
@@ -45,5 +60,24 @@ public class ObjectFieldObject {
                 "stringField='" + stringField + '\'' +
                 ", innerClassField=" + innerClassField +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ObjectFieldObject that = (ObjectFieldObject) o;
+
+        if (getStringField() != null ? !getStringField().equals(that.getStringField()) : that.getStringField() != null)
+            return false;
+        return getInnerClassField() != null ? getInnerClassField().equals(that.getInnerClassField()) : that.getInnerClassField() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getStringField() != null ? getStringField().hashCode() : 0;
+        result = 31 * result + (getInnerClassField() != null ? getInnerClassField().hashCode() : 0);
+        return result;
     }
 }

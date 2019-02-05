@@ -4,5 +4,11 @@
     "weight": 12.3,
     "speed": 12345.12345,
     "numberOfRabbitsKilled": 123
+  },
+  {
+    "type": "cat",
+    "weight" : 1.3,
+    "name" : "Tom",
+    "breed" : "kitten"
   }
 ]

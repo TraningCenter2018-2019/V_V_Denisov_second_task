@@ -35,4 +35,22 @@ public class MultiGenericTypeObject<T, V> {
                 ", value2=" + value2 +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MultiGenericTypeObject<?, ?> that = (MultiGenericTypeObject<?, ?>) o;
+
+        if (getValue() != null ? !getValue().equals(that.getValue()) : that.getValue() != null) return false;
+        return getValue2() != null ? getValue2().equals(that.getValue2()) : that.getValue2() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getValue() != null ? getValue().hashCode() : 0;
+        result = 31 * result + (getValue2() != null ? getValue2().hashCode() : 0);
+        return result;
+    }
 }
