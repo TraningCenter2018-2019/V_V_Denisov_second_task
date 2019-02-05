@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
  *
  * @param <T> object type
  */
-public class TypeReference<T> implements Comparable<TypeReference<T>> {
+public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
     /**
      * Type object field.
      */

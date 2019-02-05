@@ -34,4 +34,32 @@ public class DOMObject {
     public void setProperties(List<DOMProperty> properties) {
         this.properties = properties;
     }
+
+    @Override
+    public String toString() {
+        return String.format("<object: properties[%s]>", getStringFromProperties());
+    }
+
+    private String getStringFromProperties(){
+        String[] values = new String[properties.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = properties.get(i).toString();
+        }
+        return String.join(", ", values);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DOMObject domObject = (DOMObject) o;
+
+        return getProperties() != null ? getProperties().equals(domObject.getProperties()) : domObject.getProperties() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return getProperties() != null ? getProperties().hashCode() : 0;
+    }
 }

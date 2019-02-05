@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import testmodel.*;
+import testmodel.hierarchy.Mammal;
+import testmodel.hierarchy.Wolf;
 import testutil.ResourceManager;
 
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.util.List;
 
 /**
  * Tests for both parser implementations.
+ * 0 - DOMParser
+ * 1 - SAXParser
  */
 @RunWith(Parameterized.class)
 public class ParserTest {
@@ -238,9 +242,42 @@ public class ParserTest {
         Assertions.assertNotNull(genericResult,
                 "Deserialized object must not be null");
         Assertions.assertEquals(generic.getValue(), genericResult.getValue(),
-                "Values are ot equal");
+                "Values are not equal");
         Assertions.assertEquals(generic.getValue2(), genericResult.getValue2(),
-                "Values are ot equal");
+                "Values are not equal");
+    }
+
+
+    /**
+     * Parser must deserialize object with some dynamic types.
+     *
+     * @throws IOException error reading test resources.
+     */
+    @Test
+    public void parserMustDeserializeInheritedObjects() throws IOException {
+        //arrange
+        String json = ResourceManager.getResourceString("testmodel/hierarchy/hierarchy.json");
+        List<Mammal> result = new ArrayList<>(1);
+        result.add(new Wolf(12345.12345, 123, 12.3f));
+
+        //act
+        List<Mammal> parsingResult = null;
+        try {
+            parsingResult = parser.parseString(json,
+                    new TypeReference<List<Mammal>>() {
+                    });
+        } catch (Exception e) {
+            Assertions.fail(e);
+        }
+
+        //assert
+        Assertions.assertNotNull(parsingResult,
+                "Deserialized object must not be null");
+        Assertions.assertEquals(result.size(), parsingResult.size(),
+                "Lists must have equal size");
+        Assertions.assertEquals(result.get(0).getClass(), parsingResult.get(0).getClass(),
+                "Values are not equal");
+        //todo: some asserts here
     }
 
     /**

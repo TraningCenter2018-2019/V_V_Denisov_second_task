@@ -1,0 +1,8 @@
+[
+  {
+    "type": "wolf",
+    "weight": 12.3,
+    "speed": 12345.12345,
+    "numberOfRabbitsKilled": 123
+  }
+]

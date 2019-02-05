@@ -57,4 +57,44 @@ public class DOMValue {
     public List<DOMValue> getListValue() {
         return listValue;
     }
+
+    @Override
+    public String toString() {
+        if (stringValue != null)
+            return String.format("<string: \"%s\">", stringValue);
+        else if (objectValue != null)
+            return objectValue.toString();
+        else
+            return String.format("<list of values: [%s]>", getStringFromListValue());
+    }
+
+    private String getStringFromListValue(){
+        String[] values = new String[listValue.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = listValue.get(i).toString();
+        }
+        return String.join(", ", values);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DOMValue value = (DOMValue) o;
+
+        if (getStringValue() != null ? !getStringValue().equals(value.getStringValue()) : value.getStringValue() != null)
+            return false;
+        if (getObjectValue() != null ? !getObjectValue().equals(value.getObjectValue()) : value.getObjectValue() != null)
+            return false;
+        return getListValue() != null ? getListValue().equals(value.getListValue()) : value.getListValue() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getStringValue() != null ? getStringValue().hashCode() : 0;
+        result = 31 * result + (getObjectValue() != null ? getObjectValue().hashCode() : 0);
+        result = 31 * result + (getListValue() != null ? getListValue().hashCode() : 0);
+        return result;
+    }
 }

@@ -114,15 +114,15 @@ class DOMParserTest {
         String json = ResourceManager.getResourceString("listfield.json");
         DOMValue domValue = new DOMValue(new ArrayList<DOMValue>() {
             {
-                new DOMValue("first");
-                new DOMValue("second");
-                new DOMValue("third");
-                new DOMValue(new ArrayList<DOMValue>() {
+                this.add(new DOMValue("first"));
+                this.add(new DOMValue("second"));
+                this.add(new DOMValue("third"));
+                this.add(new DOMValue(new ArrayList<DOMValue>() {
                     {
-                        new DOMValue("inner1");
-                        new DOMValue("inner2");
+                        this.add(new DOMValue("inner1"));
+                        this.add(new DOMValue("inner2"));
                     }
-                });
+                }));
             }
         });
 
@@ -160,8 +160,8 @@ class DOMParserTest {
     void parserMustReadStringAsValue() throws IOException {
         //arrange
         DOMParser domParser = new DOMParser();
-        String json = ResourceManager.getResourceString("listfield.json");
-        DOMValue domValue = new DOMValue(json);
+        String json = ResourceManager.getResourceString("string.json");
+        DOMValue domValue = new DOMValue(json.substring(1, json.length() - 1));
 
         //act
         DOMValue node = null;
@@ -177,7 +177,7 @@ class DOMParserTest {
         String value = node.getStringValue();
         Assertions.assertNotNull(value,
                 "Value has not been read");
-        Assertions.assertEquals(json, value,
+        Assertions.assertEquals(domValue.getStringValue(), value,
                 "The string was read incorrectly");
     }
 
@@ -193,22 +193,22 @@ class DOMParserTest {
         String json = ResourceManager.getResourceString("objectasvalue.json");
         DOMValue domValue = new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
             {
-                new DOMProperty("string_key", new DOMValue("string_value"));
-                new DOMProperty("object_key", new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
+                this.add(new DOMProperty("string_key", new DOMValue("value")));
+                this.add(new DOMProperty("object_key", new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
                     {
-                        new DOMProperty("inner_string_key", new DOMValue("inner_value"));
-                        new DOMProperty("inner_list_key", new DOMValue(new ArrayList<DOMValue>() {
+                        this.add(new DOMProperty("inner_string_key", new DOMValue("inner_value")));
+                        this.add(new DOMProperty("inner_list_key", new DOMValue(new ArrayList<DOMValue>() {
                             {
-                                new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
+                                this.add(new DOMValue(new DOMObject(new ArrayList<DOMProperty>() {
                                     {
-                                        new DOMProperty("key1", new DOMValue("val1"));
-                                        new DOMProperty("key2", new DOMValue("val2"));
+                                        this.add(new DOMProperty("key1", new DOMValue("val1")));
+                                        this.add(new DOMProperty("key2", new DOMValue("val2")));
                                     }
-                                }));
+                                })));
                             }
-                        }));
+                        })));
                     }
-                })));
+                }))));
             }
         }));
 
