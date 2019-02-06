@@ -60,15 +60,21 @@ public class DOMValue {
 
     @Override
     public String toString() {
-        if (stringValue != null)
+        if (stringValue != null) {
             return String.format("<string: \"%s\">", stringValue);
-        else if (objectValue != null)
+        } else if (objectValue != null) {
             return objectValue.toString();
-        else
+        } else {
             return String.format("<list of values: [%s]>", getStringFromListValue());
+        }
     }
 
-    private String getStringFromListValue(){
+    /**
+     * Returns a list of values as a string.
+     *
+     * @return values as string
+     */
+    private String getStringFromListValue() {
         String[] values = new String[listValue.size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = listValue.get(i).toString();
@@ -78,23 +84,63 @@ public class DOMValue {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         DOMValue value = (DOMValue) o;
 
-        if (getStringValue() != null ? !getStringValue().equals(value.getStringValue()) : value.getStringValue() != null)
-            return false;
-        if (getObjectValue() != null ? !getObjectValue().equals(value.getObjectValue()) : value.getObjectValue() != null)
-            return false;
-        return getListValue() != null ? getListValue().equals(value.getListValue()) : value.getListValue() == null;
+        if (getStringValue() != null) {
+            if (!getStringValue().equals(value.getStringValue())) {
+                return false;
+            }
+        } else {
+            if (value.getStringValue() != null) {
+                return false;
+            }
+        }
+        if (getObjectValue() != null) {
+            if (!getObjectValue().equals(value.getObjectValue())) {
+                return false;
+            }
+        } else {
+            if (value.getObjectValue() != null) {
+                return false;
+            }
+        }
+        if (getListValue() != null) {
+            return getListValue().equals(value.getListValue());
+        } else {
+            return value.getListValue() == null;
+        }
     }
+
+    /**
+     * Coefficient used when calculating the hash.
+     */
+    private static final int HASH_SEARCH_FACTOR = 31;
 
     @Override
     public int hashCode() {
-        int result = getStringValue() != null ? getStringValue().hashCode() : 0;
-        result = 31 * result + (getObjectValue() != null ? getObjectValue().hashCode() : 0);
-        result = 31 * result + (getListValue() != null ? getListValue().hashCode() : 0);
+        int result;
+        if (getStringValue() != null) {
+            result = getStringValue().hashCode();
+        } else {
+            result = 0;
+        }
+        if (getObjectValue() != null) {
+            result = HASH_SEARCH_FACTOR * result + getObjectValue().hashCode();
+        } else {
+            result = HASH_SEARCH_FACTOR * result;
+        }
+        if (getListValue() != null) {
+            result = HASH_SEARCH_FACTOR * result + getListValue().hashCode();
+        } else {
+            result = HASH_SEARCH_FACTOR * result;
+        }
         return result;
     }
 }

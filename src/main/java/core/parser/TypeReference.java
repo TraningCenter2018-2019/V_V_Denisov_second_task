@@ -1,7 +1,5 @@
 package core.parser;
 
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -18,6 +16,9 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
      */
     private final Type type;
 
+    /**
+     * The association between string names of dynamic types and the classes they are.
+     */
     private HashMap<String, Class> references = new HashMap<>();
 
     /**
@@ -41,6 +42,12 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
         return type;
     }
 
+    /**
+     * Returns the class, which is now a dynamic type, by its dynamic name.
+     *
+     * @param type type name
+     * @return class of this type or null if it was not found
+     */
     public Class getTypeByName(String type) {
         return references.get(type);
     }

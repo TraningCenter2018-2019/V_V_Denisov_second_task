@@ -53,19 +53,49 @@ public class DOMProperty {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         DOMProperty property = (DOMProperty) o;
 
-        if (getKey() != null ? !getKey().equals(property.getKey()) : property.getKey() != null) return false;
-        return getValue() != null ? getValue().equals(property.getValue()) : property.getValue() == null;
+        if (getKey() != null) {
+            if (!getKey().equals(property.getKey())) {
+                return false;
+            }
+        } else {
+            if (property.getKey() != null) {
+                return false;
+            }
+        }
+        if (getValue() != null) {
+            return getValue().equals(property.getValue());
+        } else {
+            return property.getValue() == null;
+        }
     }
+
+    /**
+     * Coefficient used when calculating the hash.
+     */
+    private static final int HASH_SEARCH_FACTOR = 31;
 
     @Override
     public int hashCode() {
-        int result = getKey() != null ? getKey().hashCode() : 0;
-        result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
+        int result;
+        if (getKey() != null) {
+            result = getKey().hashCode();
+        } else {
+            result = 0;
+        }
+        if (getValue() != null) {
+            result = HASH_SEARCH_FACTOR * result + getValue().hashCode();
+        } else {
+            result = HASH_SEARCH_FACTOR * result;
+        }
         return result;
     }
 }

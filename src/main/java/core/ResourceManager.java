@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 /**
  * The class allows you to get resources in the project.
  */
-public class ResourceManager {
+public final class ResourceManager {
     /**
      * Util class has private constructor.
      */
@@ -26,8 +26,9 @@ public class ResourceManager {
                 new InputStreamReader(
                         Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)))) {
             StringBuilder stringBuilder = new StringBuilder();
-            while (bufferedReader.ready())
+            while (bufferedReader.ready()) {
                 stringBuilder.append(bufferedReader.readLine());
+            }
 
             return stringBuilder.toString();
         }
