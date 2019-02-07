@@ -473,11 +473,16 @@ public class DOMParser implements Parser {
      * Creates a new one if it was not created.
      *
      * @return reader to read json
+     * @throws IOException json hasn't been set
      */
-    private StringReader getReader() {
+    private StringReader getReader() throws IOException {
         if (reader == null && json != null) {
             reader = new StringReader(json);
         }
-        return reader;
+        if (reader == null) {
+            throw new IOException("json hasn't been set");
+        } else {
+            return reader;
+        }
     }
 }
