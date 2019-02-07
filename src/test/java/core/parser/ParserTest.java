@@ -290,9 +290,14 @@ public class ParserTest {
      */
     @Parameterized.Parameters
     public static Collection<Object[]> instancesToTest() {
-        return Arrays.asList(
-                new Object[]{new DOMParser()},
-                new Object[]{new SAXParser()}
-        );
+        return new ArrayList<Object[]>(1){
+            {
+                this.add(new Object[]{new DOMParser()});
+            }
+        };
+//        return Arrays.asList(
+//                new Object[]{new DOMParser()},
+//                new Object[]{new SAXParser()}
+//        );
     }
 }
