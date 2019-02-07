@@ -397,11 +397,11 @@ public class DOMParser implements Parser {
      */
     private DOMProperty createDOMProperty() throws IOException, ParseException {
         DOMProperty property = new DOMProperty();
-        StringReader reader = getReader();
+        StringReader stringReader = getReader();
         String key = getString();
         property.setKey(key);
-        while (reader.ready()) {
-            char c = (char) reader.read();
+        while (stringReader.ready()) {
+            char c = (char) stringReader.read();
             if (shouldContinue(c)) {
                 continue;
             }
@@ -477,10 +477,10 @@ public class DOMParser implements Parser {
      */
     private String getString() throws IOException, ParseException {
         StringBuilder stringBuilder = new StringBuilder();
-        StringReader reader = getReader();
+        StringReader stringReader = getReader();
         boolean isMeta = false;
-        while (reader.ready()) {
-            char c = (char) reader.read();
+        while (stringReader.ready()) {
+            char c = (char) stringReader.read();
             switch (c) {
                 case '"':
                     if (isMeta) {
@@ -500,7 +500,11 @@ public class DOMParser implements Parser {
                     break;
                 default:
                     if (isMeta) {
-                        c = escapeChar(c);
+                        if (isMetaChar(c)) {
+                            c = escapeChar(c);
+                        } else {
+                            stringBuilder.append('\\').append(c);
+                        }
                         isMeta = false;
                     }
                     stringBuilder.append(c);
