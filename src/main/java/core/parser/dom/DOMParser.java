@@ -6,6 +6,7 @@ import core.parser.TypeReference;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.text.ParseException;
@@ -29,6 +30,16 @@ public class DOMParser implements Parser {
      * Root of DOM. This value is because it can be an array or an object.
      */
     private DOMValue root;
+
+    /**
+     * Exception message.
+     */
+    private static final String SETTER_IS_NOT_FOUND = "The setter for the field was not found.";
+
+    /**
+     * Exception message.
+     */
+    private static final String TOO_MANY_SETTERS = "Too many setters were found for the field.";
 
     @Override
     public <T> T parseString(String toParse, Class<T> type)
@@ -106,7 +117,7 @@ public class DOMParser implements Parser {
         DOMValue domValue = property.getValue();
         List<Method> methods = getMethodsByName(type, setterName);
         if (methods.size() == 0) {
-            throw new Exception("The setter for the field was not found.");
+            throw new Exception(SETTER_IS_NOT_FOUND);
         }
         if (methods.size() == 1) {
             fillField(methods, domValue, resultObject, ref);
@@ -129,7 +140,7 @@ public class DOMParser implements Parser {
             Method method = type.getMethod(setterName, String.class);
             method.invoke(resultObject, domValue.getStringValue());
         } catch (NoSuchMethodException ignored) {
-            throw new Exception("The setter for the field was not found.");
+            throw new Exception(SETTER_IS_NOT_FOUND);
         }
     }
 
@@ -189,35 +200,61 @@ public class DOMParser implements Parser {
         Method m = methods.get(0);
         if (m.getParameterCount() != 1) {
             if (m.getParameterCount() > 1) {
-                throw new Exception("Too many setters were found for the field.");
+                throw new Exception(TOO_MANY_SETTERS);
             } else {
-                throw new Exception("The setter for the field was not found.");
+                throw new Exception(SETTER_IS_NOT_FOUND);
             }
         }
         if (m.getParameterTypes()[0] == String.class) {
-            String stringValue = domValue.getStringValue();
-            if (stringValue != null) {
-                m.invoke(resultObject, stringValue);
-            }
+            setStringValueUsingSetter(resultObject, domValue, m);
         } else if (Arrays.asList(m.getParameterTypes()[0].getInterfaces()).contains(List.class)
                 || m.getParameterTypes()[0] == List.class) {
-            List<DOMValue> values = domValue.getListValue();
-            Class valueTypes = ref.getTypeByName(
-                    ((ParameterizedType) m.getParameters()[0].getParameterizedType()).
-                            getActualTypeArguments()[0].getTypeName());
-            List valueTypeList = createValueTypes(valueTypes, values, ref);
-            m.invoke(resultObject, valueTypeList);
+            setListValueUsingSetter(resultObject, domValue, m, ref);
         } else {
             Class valueTypes = ref.getTypeByName(m.getParameters()[0].getParameterizedType().getTypeName());
             if (valueTypes == String.class) {
-                String stringValue = domValue.getStringValue();
-                if (stringValue != null) {
-                    m.invoke(resultObject, stringValue);
-                }
+                setStringValueUsingSetter(resultObject, domValue, m);
             } else {
                 Object objectByType = createObjectByType(valueTypes, ref, domValue.getObjectValue());
                 m.invoke(resultObject, objectByType);
             }
+        }
+    }
+
+    /**
+     * Sets list value to object using setter method.
+     *
+     * @param resultObject the object in which the created list will be saved
+     * @param domValue     data for the list of objects
+     * @param setter       object setter
+     * @param ref          information about dynamic object types
+     * @param <T>          the type of object whose setter will be used
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void setListValueUsingSetter(Object resultObject, DOMValue domValue, Method setter, TypeReference<T> ref)
+            throws Exception {
+        List<DOMValue> values = domValue.getListValue();
+        Class valueTypes = ref.getTypeByName(
+                ((ParameterizedType) setter.getParameters()[0].getParameterizedType()).
+                        getActualTypeArguments()[0].getTypeName());
+        List valueTypeList = createValueTypes(valueTypes, values, ref);
+        setter.invoke(resultObject, valueTypeList);
+    }
+
+    /**
+     * Sets string value to object using setter method.
+     *
+     * @param resultObject the object in which the string will be saved
+     * @param domValue     data for the object
+     * @param setter       object setter
+     * @param <T>          the type of object whose setter will be used
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void setStringValueUsingSetter(T resultObject, DOMValue domValue, Method setter)
+            throws Exception {
+        String stringValue = domValue.getStringValue();
+        if (stringValue != null) {
+            setter.invoke(resultObject, stringValue);
         }
     }
 
@@ -265,7 +302,7 @@ public class DOMParser implements Parser {
             for (DOMProperty property : dom.getProperties()) {
                 List<Method> methods = getMethodsByName(type, ReflectionUtils.getSetterMethodName(property.getKey()));
                 if (methods.size() == 0) {
-                    throw new Exception("The setter for the field was not found.");
+                    throw new Exception(SETTER_IS_NOT_FOUND);
                 } else if (methods.size() == 1) {
                     fillField(methods, property.getValue(), instance, ref);
                 }
