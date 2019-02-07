@@ -1,0 +1,6 @@
+{
+  "stringField": "stringValue",
+  "innerClassField": {
+    "innerStringField": "innerStringValue"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "string_key": "value",
+  "object_key": {
+    "inner_string_key": "inner_value",
+    "inner_list_key": [
+      {
+        "key1": "val1",
+        "key2": "val2"
+      }
+    ]
+  }
+}
