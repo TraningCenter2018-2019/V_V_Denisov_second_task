@@ -39,30 +39,7 @@ public class DOMParser implements Parser {
         DOMObject domObject = root.getObjectValue();
         if (domObject != null) {
             for (DOMProperty property : domObject.getProperties()) {
-                String setterName = ReflectionUtils.getSetterMethodName(property.getKey());
-                DOMValue domValue = property.getValue();
-                if (domValue.getStringValue() != null) {
-                    try {
-                        Method method = type.getMethod(setterName, String.class);
-                        method.invoke(resultObject, domValue.getStringValue());
-                    } catch (NoSuchMethodException ignored) {
-                        throw new Exception("The setter for the field was not found.");
-                    }
-                } else if (domValue.getListValue() != null) {
-                    List<Method> methods = getMethodsByName(type, setterName);
-                    if (methods.size() == 1) {
-                        Method method = methods.get(0);
-                        method.invoke(resultObject, createValueTypes(Object.class, domValue.getListValue(), null));
-                    }
-                } else if (domValue.getObjectValue() != null) {
-                    List<Method> methods = getMethodsByName(type, setterName);
-                    if (methods.size() == 1) {
-                        Method method = methods.get(0);
-                        method.invoke(resultObject, createObjectByType(
-                                (Class) method.getParameters()[0].getParameterizedType(),
-                                null, domValue.getObjectValue()));
-                    }
-                }
+                createValueAndSaveItToField(resultObject, property, type);
             }
         }
         return resultObject;
@@ -83,18 +60,118 @@ public class DOMParser implements Parser {
         DOMObject domObject = root.getObjectValue();
         if (domObject != null) {
             for (DOMProperty property : domObject.getProperties()) {
-                String setterName = ReflectionUtils.getSetterMethodName(property.getKey());
-                DOMValue domValue = property.getValue();
-                List<Method> methods = getMethodsByName(type, setterName);
-                if (methods.size() == 0) {
-                    throw new Exception("The setter for the field was not found.");
-                }
-                if (methods.size() == 1) {
-                    fillField(methods, domValue, resultObject, ref);
-                }
+                createValueAndSaveItToField(resultObject, property, type, ref);
             }
         }
         return resultObject;
+    }
+
+    /**
+     * Creates an object of a specific type and saves it using the setter of a specific name.
+     *
+     * @param resultObject the object in which the string will be saved
+     * @param property     property to be stored in object
+     * @param type         the type of object whose setter will be used
+     * @param <T>          object type
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void createValueAndSaveItToField(T resultObject, DOMProperty property,
+                                                 Class<T> type)
+            throws Exception {
+        String setterName = ReflectionUtils.getSetterMethodName(property.getKey());
+        DOMValue domValue = property.getValue();
+        if (domValue.getStringValue() != null) {
+            setStringToField(resultObject, type, domValue, setterName);
+        } else if (domValue.getListValue() != null) {
+            createListOfObjectsAndSetItToField(resultObject, type, domValue, setterName);
+        } else if (domValue.getObjectValue() != null) {
+            createObjectAndSetItToField(resultObject, type, domValue, setterName);
+        }
+    }
+
+    /**
+     * Creates an object of a specific type and saves it using the setter of a specific name.
+     *
+     * @param resultObject the object in which the string will be saved
+     * @param property     property to be stored in object
+     * @param type         the type of object whose setter will be used
+     * @param ref          object type information
+     * @param <T>          object type
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void createValueAndSaveItToField(T resultObject, DOMProperty property,
+                                                 Class<T> type, TypeReference<T> ref)
+            throws Exception {
+        String setterName = ReflectionUtils.getSetterMethodName(property.getKey());
+        DOMValue domValue = property.getValue();
+        List<Method> methods = getMethodsByName(type, setterName);
+        if (methods.size() == 0) {
+            throw new Exception("The setter for the field was not found.");
+        }
+        if (methods.size() == 1) {
+            fillField(methods, domValue, resultObject, ref);
+        }
+    }
+
+    /**
+     * Saves string using the setter of a specific name.
+     *
+     * @param resultObject the object in which the string will be saved
+     * @param type         the type of object whose setter will be used
+     * @param domValue     data for the new object
+     * @param setterName   object setter name
+     * @param <T>          object type
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void setStringToField(T resultObject, Class<T> type, DOMValue domValue, String setterName)
+            throws Exception {
+        try {
+            Method method = type.getMethod(setterName, String.class);
+            method.invoke(resultObject, domValue.getStringValue());
+        } catch (NoSuchMethodException ignored) {
+            throw new Exception("The setter for the field was not found.");
+        }
+    }
+
+    /**
+     * Creates an object of a specific type and saves it using the setter of a specific name.
+     *
+     * @param resultObject the object in which the created object will be saved
+     * @param type         the type of object whose setter will be used
+     * @param domValue     data for the new object
+     * @param setterName   object setter name
+     * @param <T>          object type
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void createObjectAndSetItToField(T resultObject, Class<T> type, DOMValue domValue, String setterName)
+            throws Exception {
+        List<Method> methods = getMethodsByName(type, setterName);
+        if (methods.size() == 1) {
+            Method method = methods.get(0);
+            method.invoke(resultObject, createObjectByType(
+                    (Class) method.getParameters()[0].getParameterizedType(),
+                    null, domValue.getObjectValue()));
+        }
+    }
+
+    /**
+     * Creates a list of objects of a specific type and saves it using the setter of a specific name.
+     *
+     * @param resultObject the object in which the created object will be saved
+     * @param type         the type of object whose setter will be used
+     * @param domValue     data for the list of objects
+     * @param setterName   object setter name
+     * @param <T>          object type
+     * @throws Exception in case of an error while creating the object
+     */
+    private <T> void createListOfObjectsAndSetItToField(T resultObject,
+                                                        Class<T> type, DOMValue domValue, String setterName)
+            throws Exception {
+        List<Method> methods = getMethodsByName(type, setterName);
+        if (methods.size() == 1) {
+            Method method = methods.get(0);
+            method.invoke(resultObject, createValueTypes(Object.class, domValue.getListValue(), null));
+        }
     }
 
     /**
