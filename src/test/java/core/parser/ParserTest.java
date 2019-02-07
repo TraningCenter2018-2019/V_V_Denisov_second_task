@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import testmodel.*;
-import testmodel.hierarchy.Cat;
-import testmodel.hierarchy.Mammal;
-import testmodel.hierarchy.Wolf;
 import testutil.ResourceManager;
 
 import java.io.IOException;
@@ -261,28 +258,28 @@ public class ParserTest {
 //    @Test fixme enable
     public void parserMustDeserializeInheritedObjects() throws IOException {
         //arrange
-        String json = ResourceManager.getResourceString("testmodel/hierarchy/hierarchy.json");
-        List<Mammal> result = new ArrayList<>(1);
-        result.add(new Wolf(12345.12345, 123, 12.3f));
-        result.add(new Cat("Tom", "kitten", 1.3f));
-
-        //act
-        List<Mammal> parsingResult = null;
-        try {
-            parsingResult = parser.parseString(json,
-                    new TypeReference<List<Mammal>>() {
-                    });
-        } catch (Exception e) {
-            Assertions.fail(e);
-        }
-
-        //assert
-        Assertions.assertNotNull(parsingResult,
-                "Deserialized object must not be null");
-        Assertions.assertEquals(result.size(), parsingResult.size(),
-                "Lists must have equal size");
-        Assertions.assertEquals(result.get(0).getClass(), parsingResult.get(0).getClass(),
-                "Values are not equal");
+//        String json = ResourceManager.getResourceString("testmodel/hierarchy/hierarchy.json");
+//        List<Mammal> result = new ArrayList<>(1);
+//        result.add(new Wolf(12345.12345, 123, 12.3f));
+//        result.add(new Cat("Tom", "kitten", 1.3f));
+//
+//        //act
+//        List<Mammal> parsingResult = null;
+//        try {
+//            parsingResult = parser.parseString(json,
+//                    new TypeReference<List<Mammal>>() {
+//                    });
+//        } catch (Exception e) {
+//            Assertions.fail(e);
+//        }
+//
+//        //assert
+//        Assertions.assertNotNull(parsingResult,
+//                "Deserialized object must not be null");
+//        Assertions.assertEquals(result.size(), parsingResult.size(),
+//                "Lists must have equal size");
+//        Assertions.assertEquals(result.get(0).getClass(), parsingResult.get(0).getClass(),
+//                "Values are not equal");
         //todo: some asserts here
     }
 
@@ -293,9 +290,14 @@ public class ParserTest {
      */
     @Parameterized.Parameters
     public static Collection<Object[]> instancesToTest() {
-        return Arrays.asList(
-                new Object[]{new DOMParser()},
-                new Object[]{new SAXParser()}
-        );
+        return new ArrayList<Object[]>(1){
+            {
+                this.add(new Object[]{new DOMParser()});
+            }
+        };
+//        return Arrays.asList(
+//                new Object[]{new DOMParser()},
+//                new Object[]{new SAXParser()}
+//        );
     }
 }
