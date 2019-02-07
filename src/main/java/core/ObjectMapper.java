@@ -3,10 +3,7 @@ package core;
 import core.parser.Parser;
 import core.parser.TypeReference;
 import core.parser.dom.DOMParser;
-import core.parser.model.Cat;
 import core.parser.sax.SAXParser;
-
-import java.io.IOException;
 
 /**
  * ObjectMapper allows you to serialize objects and deserialize json-documents.
@@ -64,11 +61,5 @@ public class ObjectMapper {
      */
     public <T> T readObjectFromJSON(String json, TypeReference<T> ref) throws Exception {
         return parser.parseString(json, ref);
-    }
-
-    public static void main(String[] args) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper(new DOMParser());
-        Cat cat = objectMapper.readObjectFromJSON(ResourceManager.getResourceString("test.json"), Cat.class);
-        System.out.println(cat);
     }
 }
